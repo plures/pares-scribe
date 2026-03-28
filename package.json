@@ -1,0 +1,35 @@
+{
+  "name": "pares-editor",
+  "version": "0.1.0",
+  "description": "Lightweight code editor plugin for pares-radix — VS Code-inspired editing experience",
+  "license": "BSL-1.1",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plures/pares-editor.git"
+  },
+  "homepage": "https://plures.io/editor",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "lint": "eslint .",
+    "check": "svelte-check --tsconfig tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.52.0"
+  },
+  "devDependencies": {
+    "@plures/design-dojo": "^0.10.17",
+    "@sveltejs/kit": "^2.0.0",
+    "svelte": "^5.0.0",
+    "svelte-check": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^9.0.0"
+  },
+  "peerDependencies": {
+    "pares-radix": ">=0.1.0"
+  }
+}
