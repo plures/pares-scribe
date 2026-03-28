@@ -1,5 +1,5 @@
 /**
- * pares-editor — Plugin entry point for pares-modulus.
+ * pares-scribe — Plugin entry point for pares-modulus.
  *
  * This is the manifest that pares-radix reads when loading the plugin.
  * It declares pages, panels, commands, keybindings, and settings.
@@ -8,8 +8,8 @@
 import type { PluginManifest } from 'pares-radix';
 
 export const manifest: PluginManifest = {
-	id: 'pares-editor',
-	name: 'Pares Editor',
+	id: 'pares-scribe',
+	name: 'Pares Scribe',
 	version: '0.1.0',
 	description: 'Lightweight code editor with VS Code-inspired features',
 	author: 'Plures',
