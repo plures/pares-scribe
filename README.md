@@ -1,4 +1,4 @@
-# pares-editor
+# pares-scribe
 
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE)
 
@@ -77,7 +77,7 @@ src/
 ```typescript
 // Registered in pares-modulus as:
 {
-  id: 'pares-editor',
+  id: 'pares-scribe',
   name: 'Pares Editor',
   version: '0.1.0',
   description: 'Lightweight code editor with VS Code-inspired features',
