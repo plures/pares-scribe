@@ -1,4 +1,4 @@
-# ROADMAP — pares-editor
+# ROADMAP — pares-scribe
 
 ## v0.1.0 — MVP (Current)
 - [x] Plugin manifest and registration
