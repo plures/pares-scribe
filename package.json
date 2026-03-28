@@ -1,14 +1,14 @@
 {
-  "name": "pares-editor",
+  "name": "pares-scribe",
   "version": "0.1.0",
   "description": "Lightweight code editor plugin for pares-radix — VS Code-inspired editing experience",
   "license": "BSL-1.1",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/plures/pares-editor.git"
+    "url": "https://github.com/plures/pares-scribe.git"
   },
-  "homepage": "https://plures.io/editor",
+  "homepage": "https://plures.io/scribe",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
