@@ -1,0 +1,13 @@
+# Changelog
+
+## [0.2.0] — 2026-03-29
+
+- chore: apply org-standard automation files (#1) (3d59e11)
+- Merge branch 'main' of https://github.com/plures/pares-editor (b0c9e2d)
+- feat: Monaco integration, file explorer, command palette, editor layout (ff936de)
+- Rename plugin from 'Pares Editor' to 'Pares Scribe' (1a49e6b)
+- Rename project from pares-editor to pares-scribe (b980028)
+- Rename project from pares-editor to pares-scribe (acc5ada)
+- Rename project from 'pares-editor' to 'pares-scribe' (48d1a95)
+- feat: pares-editor — lightweight code editor plugin for pares-radix (13a95d3)
+
