@@ -1,3 +1,7 @@
+## [0.2.2] — 2026-03-31
+
+- fix(lifecycle): v9.1 — fix QA dispatch (client_payload as JSON object) (a4fc576)
+
 ## [0.2.1] — 2026-03-31
 
 - fix(lifecycle): rewrite v9 — apply suggestions, merge, no nudges (087c8b4)
