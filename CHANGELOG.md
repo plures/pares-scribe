@@ -1,3 +1,7 @@
+## [0.2.1] — 2026-03-31
+
+- fix(lifecycle): rewrite v9 — apply suggestions, merge, no nudges (087c8b4)
+
 # Changelog
 
 ## [0.2.0] — 2026-03-29
