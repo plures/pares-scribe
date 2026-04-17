@@ -1,6 +1,6 @@
 {
   "name": "pares-scribe",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Lightweight code editor plugin for pares-radix — VS Code-inspired editing experience",
   "license": "BSL-1.1",
   "type": "module",

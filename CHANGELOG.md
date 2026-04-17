@@ -1,3 +1,9 @@
+## [0.2.5] — 2026-04-17
+
+- fix(lifecycle): label-based retry counter + CI fix priority (4bfb313)
+- ci: inline lifecycle workflow — fix schedule failures (195e74e)
+- ci: centralize lifecycle — event-driven with schedule guard (5897763)
+
 ## [0.2.4] — 2026-04-01
 
 - fix(lifecycle): v9.2 — process all PRs per tick (return→continue), widen bot filter (50df0f2)
