@@ -1,6 +1,6 @@
 # pares-scribe
 
-[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE)
+[![License: BSL-1.1](https://img.shields.io/badge/License-BSL--1.1-blue.svg)](LICENSE) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE-MIT)
 
 **Lightweight code editor plugin for [pares-radix](https://github.com/plures/pares-radix)** — a VS Code-inspired editing experience that runs inside the Pares platform.
 
@@ -109,5 +109,6 @@ npm test          # Vitest
 
 ## License
 
-[BSL 1.1](LICENSE) — personal/non-commercial use free, commercial requires license.
-Converts to Apache 2.0 on March 28, 2030.
+
+Dual-licensed under [BSL-1.1](LICENSE) and [MIT](LICENSE-MIT). You may choose either license at your option.
+
