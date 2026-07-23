@@ -3,7 +3,7 @@
  * that make an editor useful for developers.
  */
 
-import { registerCommand } from './registry.js';
+import type { CommandEntry } from './registry.js';
 
 // ── Line Operations ─────────────────────────────────────────────────────────
 
@@ -166,3 +166,43 @@ export function wrapLines(text: string, width: number): string {
 		return wrapped.join('\n');
 	}).join('\n');
 }
+
+// ── Command Palette Registration ────────────────────────────────────────────
+
+import { transformActiveEditor } from '../editor/active-editor.js';
+
+function textCmd(id: string, title: string, fn: (text: string) => string): CommandEntry {
+	return {
+		id,
+		title,
+		category: 'Text',
+		handler: () => transformActiveEditor(fn),
+	};
+}
+
+/** All text-manipulation commands, ready to register with the command registry. */
+export const TEXT_COMMANDS: CommandEntry[] = [
+	textCmd('text.sortLinesAsc', 'Sort Lines Ascending', sortLinesAsc),
+	textCmd('text.sortLinesDesc', 'Sort Lines Descending', sortLinesDesc),
+	textCmd('text.removeDuplicateLines', 'Remove Duplicate Lines', removeDuplicateLines),
+	textCmd('text.reverseLines', 'Reverse Lines', reverseLines),
+	textCmd('text.shuffleLines', 'Shuffle Lines', shuffleLines),
+	textCmd('text.toUpperCase', 'Transform to UPPERCASE', toUpperCase),
+	textCmd('text.toLowerCase', 'Transform to lowercase', toLowerCase),
+	textCmd('text.toTitleCase', 'Transform to Title Case', toTitleCase),
+	textCmd('text.toCamelCase', 'Transform to camelCase', toCamelCase),
+	textCmd('text.toSnakeCase', 'Transform to snake_case', toSnakeCase),
+	textCmd('text.toKebabCase', 'Transform to kebab-case', toKebabCase),
+	textCmd('text.toPascalCase', 'Transform to PascalCase', toPascalCase),
+	textCmd('text.toConstantCase', 'Transform to CONSTANT_CASE', toConstantCase),
+	textCmd('text.encodeBase64', 'Encode Base64', encodeBase64),
+	textCmd('text.decodeBase64', 'Decode Base64', decodeBase64),
+	textCmd('text.encodeUrl', 'Encode URL', encodeUrl),
+	textCmd('text.decodeUrl', 'Decode URL', decodeUrl),
+	textCmd('text.encodeHtmlEntities', 'Encode HTML Entities', encodeHtmlEntities),
+	textCmd('text.decodeHtmlEntities', 'Decode HTML Entities', decodeHtmlEntities),
+	textCmd('text.trimLines', 'Trim Lines', trimLines),
+	textCmd('text.trimTrailingWhitespace', 'Trim Trailing Whitespace', trimTrailingWhitespace),
+	textCmd('text.compressWhitespace', 'Compress Whitespace', compressWhitespace),
+	textCmd('text.removeBlankLines', 'Remove Blank Lines', removeBlankLines),
+];

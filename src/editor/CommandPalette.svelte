@@ -18,7 +18,7 @@
 
 	let query = $state('');
 	let selectedIndex = $state(0);
-	let inputEl: HTMLInputElement;
+	let inputEl: HTMLInputElement = $state()!;
 
 	// Build keybinding lookup
 	const keybindingMap = new Map<string, string>();
@@ -32,13 +32,13 @@
 		if (!query.trim()) return all;
 		const q = query.toLowerCase();
 		return all
-			.filter((cmd) => {
+			.filter((cmd: CommandEntry) => {
 				const matchTitle = cmd.title.toLowerCase().includes(q);
 				const matchId = cmd.id.toLowerCase().includes(q);
 				const matchCategory = cmd.category?.toLowerCase().includes(q) ?? false;
 				return matchTitle || matchId || matchCategory;
 			})
-			.sort((a, b) => {
+			.sort((a: CommandEntry, b: CommandEntry) => {
 				// Prefer title starts-with matches
 				const aStarts = a.title.toLowerCase().startsWith(q) ? 0 : 1;
 				const bStarts = b.title.toLowerCase().startsWith(q) ? 0 : 1;
@@ -102,7 +102,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div class="palette-overlay" role="presentation" onclick={close}>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="palette" role="listbox" onclick={(e) => e.stopPropagation()}>
+		<div class="palette" role="listbox" tabindex="-1" onclick={(e) => e.stopPropagation()}>
 			<div class="search-bar">
 				<span class="search-icon">⌘</span>
 				<input
@@ -122,6 +122,7 @@
 						class="result-item"
 						class:selected={i === selectedIndex}
 						role="option"
+						tabindex="-1"
 						aria-selected={i === selectedIndex}
 						onclick={() => handleSelect(cmd)}
 						onmouseenter={() => { selectedIndex = i; }}

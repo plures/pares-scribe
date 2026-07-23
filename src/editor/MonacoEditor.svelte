@@ -9,6 +9,7 @@
 	import type * as Monaco from 'monaco-editor';
 	import { commandRegistry } from '../commands/registry.js';
 	import { DEFAULT_KEYMAP, parseKeybinding } from '../keybindings/keymap.js';
+	import { setActiveEditor } from './active-editor.js';
 
 	interface Props {
 		/** File content to display */
@@ -143,13 +144,18 @@
 			});
 
 			onready?.(editor);
+
+			setActiveEditor(editor);
+			editor.onDidFocusEditorText(() => setActiveEditor(editor));
 		} catch (err) {
 			console.error('Failed to load Monaco Editor:', err);
 		}
 	});
 
 	onDestroy(() => {
-		editor?.dispose();
+		if (editor === undefined) return;
+		editor.dispose();
+		setActiveEditor(undefined);
 	});
 
 	// React to external value changes

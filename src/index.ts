@@ -15,7 +15,7 @@ export { commandRegistry, type CommandEntry, type CommandHandler } from './comma
 export { TEXT_COMMANDS } from './commands/text-commands.js';
 
 // ── File Store ──────────────────────────────────────────────────────────────
-export { fileStore, type FileNode } from './explorer/file-store.js';
+export { fileStore, type FileNode } from './explorer/file-store.svelte.js';
 
 // ── Keybindings ─────────────────────────────────────────────────────────────
 export { DEFAULT_KEYMAP, parseKeybinding, type Keybinding } from './keybindings/keymap.js';
