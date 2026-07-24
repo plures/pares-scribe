@@ -18,7 +18,7 @@
 
 	let query = $state('');
 	let selectedIndex = $state(0);
-	let inputEl: HTMLInputElement = $state()!;
+	let inputEl: HTMLInputElement | null = null;
 
 	// Build keybinding lookup
 	const keybindingMap = new Map<string, string>();
