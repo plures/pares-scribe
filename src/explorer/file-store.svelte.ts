@@ -20,6 +20,18 @@ export interface EditorFile {
 	modifiedAt: number;
 }
 
+/** A node in the file explorer tree — either a file or a directory. */
+export interface FileNode {
+	name: string;
+	path: string;
+	type: 'file' | 'directory';
+	/** File content, loaded on demand (files only). */
+	content?: string;
+	/** Whether this file has unsaved changes (files only). */
+	modified?: boolean;
+	children?: FileNode[];
+}
+
 export interface FileTreeNode {
 	name: string;
 	path: string;
@@ -93,8 +105,8 @@ export function detectLanguage(filename: string): string {
 /**
  * Build a file tree from a flat list of paths.
  */
-export function buildFileTree(paths: string[]): FileTreeNode[] {
-	const root: FileTreeNode = { name: '', path: '', type: 'directory', children: [] };
+export function buildFileTree(paths: string[]): FileNode[] {
+	const root: FileNode = { name: '', path: '', type: 'directory', children: [] };
 
 	for (const p of paths.sort()) {
 		const parts = p.split('/');
@@ -110,7 +122,7 @@ export function buildFileTree(paths: string[]): FileTreeNode[] {
 			} else {
 				let dir = current.children!.find((c) => c.name === name && c.type === 'directory');
 				if (!dir) {
-					dir = { name, path, type: 'directory', children: [], expanded: false };
+					dir = { name, path, type: 'directory', children: [], expanded: false } as FileNode;
 					current.children!.push(dir);
 				}
 				current = dir;
@@ -120,3 +132,56 @@ export function buildFileTree(paths: string[]): FileTreeNode[] {
 
 	return root.children ?? [];
 }
+
+/**
+ * Reactive file-tree store used by the FileExplorer/EditorLayout components.
+ * Backed by an in-memory list of paths + contents; a future increment wires
+ * this to pares-radix's partition-scoped storage APIs.
+ */
+class FileStore {
+	tree = $state<FileNode[]>([]);
+	selectedPath = $state<string | null>(null);
+
+	#files = new Map<string, FileNode>();
+
+	/** Replace the whole tree from a flat list of paths (and optional contents). */
+	load(paths: string[], contents: Record<string, string> = {}): void {
+		this.tree = buildFileTree(paths);
+		this.#files.clear();
+		this.#indexFiles(this.tree, contents);
+	}
+
+	#indexFiles(nodes: FileNode[], contents: Record<string, string>): void {
+		for (const node of nodes) {
+			if (node.type === 'file') {
+				node.content = contents[node.path] ?? '';
+				this.#files.set(node.path, node);
+			} else if (node.children) {
+				this.#indexFiles(node.children, contents);
+			}
+		}
+	}
+
+	selectFile(path: string): void {
+		this.selectedPath = path;
+	}
+
+	getFile(path: string): FileNode | undefined {
+		return this.#files.get(path);
+	}
+
+	setModified(path: string, modified: boolean): void {
+		const node = this.#files.get(path);
+		if (node) node.modified = modified;
+	}
+
+	/** Remove all files/selection. Mainly useful for tests. */
+	clear(): void {
+		this.tree = [];
+		this.selectedPath = null;
+		this.#files.clear();
+	}
+}
+
+/** Singleton file-tree store shared across the editor plugin. */
+export const fileStore = new FileStore();

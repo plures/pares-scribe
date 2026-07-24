@@ -5,7 +5,7 @@
   and selection highlighting.
 -->
 <script lang="ts">
-	import { fileStore, type FileNode } from '../explorer/file-store.js';
+	import { fileStore, type FileNode } from '../explorer/file-store.svelte.js';
 
 	interface Props {
 		/** Called when a file is selected */
@@ -66,13 +66,15 @@
 	<div class="tree" role="tree">
 		{#snippet fileTree(nodes: FileNode[], depth: number)}
 			{#each nodes as node}
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<div
 					class="tree-item"
 					class:selected={fileStore.selectedPath === node.path}
 					class:directory={node.type === 'directory'}
 					style="padding-left: {depth * 16 + 8}px"
-					role={node.type === 'directory' ? 'treeitem' : 'treeitem'}
+					role="treeitem"
 					tabindex="0"
+					aria-selected={fileStore.selectedPath === node.path}
 					aria-expanded={node.type === 'directory' ? expandedDirs.has(node.path) : undefined}
 					onclick={() => handleFileClick(node)}
 					onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFileClick(node); } }}

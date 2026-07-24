@@ -8,8 +8,9 @@
 	import MonacoEditor from './MonacoEditor.svelte';
 	import FileExplorer from './FileExplorer.svelte';
 	import CommandPalette from './CommandPalette.svelte';
-	import { fileStore, type FileNode } from '../explorer/file-store.js';
+	import { fileStore, type FileNode } from '../explorer/file-store.svelte.js';
 	import { commandRegistry } from '../commands/registry.js';
+	import { TEXT_COMMANDS } from '../commands/text-commands.js';
 
 	interface EditorTab {
 		id: string;
@@ -47,6 +48,9 @@
 		category: 'File',
 		handler: () => { if (activeTabId) closeTab(activeTabId); },
 	});
+	for (const cmd of TEXT_COMMANDS) {
+		commandRegistry.register(cmd);
+	}
 
 	function openFile(node: FileNode): void {
 		// Check if already open
