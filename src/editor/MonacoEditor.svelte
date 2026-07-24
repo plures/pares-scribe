@@ -147,6 +147,7 @@
 
 			setActiveEditor(editor);
 			editor.onDidFocusEditorText(() => setActiveEditor(editor));
+			editor.onDidBlurEditorText(() => setActiveEditor(undefined));
 		} catch (err) {
 			console.error('Failed to load Monaco Editor:', err);
 		}
