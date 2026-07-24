@@ -1,3 +1,7 @@
+## [0.7.0] — 2026-07-24
+
+- feat(editor): Monaco editor integration (closes #2) (#8) (084a45c)
+
 ## [0.6.0] — 2026-07-24
 
 - ci(release): trigger release on merge to main (#7) (ddf137a)
