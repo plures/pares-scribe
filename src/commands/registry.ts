@@ -5,6 +5,9 @@
 
 export type CommandHandler = () => void | Promise<void>;
 
+/** Called when a command handler throws or rejects. Receives the command id and the thrown value. */
+export type ExecuteErrorHandler = (id: string, err: unknown) => void;
+
 export interface CommandEntry {
 	/** Unique command id, e.g. "file.close". */
 	id: string;
@@ -18,6 +21,16 @@ export interface CommandEntry {
 
 class CommandRegistry {
 	#commands = new Map<string, CommandEntry>();
+	#onError: ExecuteErrorHandler = () => {};
+
+	/**
+	 * Register a handler for command execution errors.
+	 * The host application can wire this to its telemetry/tracing pipeline.
+	 * Replaces any previously registered handler.
+	 */
+	setErrorHandler(handler: ExecuteErrorHandler): void {
+		this.#onError = handler;
+	}
 
 	/** Register (or replace) a command. */
 	register(entry: CommandEntry): void {
@@ -39,10 +52,15 @@ class CommandRegistry {
 		return [...this.#commands.values()];
 	}
 
-	/** Execute a command by id. No-op if not found. */
+	/** Execute a command by id. No-op if not found. Handler errors are routed to the registered error handler rather than rejected, so fire-and-forget callers never produce unhandled rejections. */
 	async execute(id: string): Promise<void> {
 		const cmd = this.#commands.get(id);
-		if (cmd) await cmd.handler();
+		if (!cmd) return;
+		try {
+			await cmd.handler();
+		} catch (err) {
+			this.#onError(id, err);
+		}
 	}
 
 	/** Fuzzy-search commands by title, id, or category. */

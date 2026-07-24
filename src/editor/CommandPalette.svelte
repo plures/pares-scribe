@@ -55,8 +55,8 @@
 			.join('+');
 	}
 
-	function handleSelect(cmd: CommandEntry): void {
-		commandRegistry.execute(cmd.id);
+	async function handleSelect(cmd: CommandEntry): Promise<void> {
+		await commandRegistry.execute(cmd.id);
 		close();
 	}
 
