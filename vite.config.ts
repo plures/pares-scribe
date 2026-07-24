@@ -11,7 +11,7 @@ export default defineConfig({
 	build: {
 		lib: {
 			entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
-			name: 'pares-scribe',
+			name: 'ParesScribe',
 			fileName: 'pares-scribe',
 		},
 		rollupOptions: {
