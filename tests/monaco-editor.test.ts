@@ -1,8 +1,14 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { render, cleanup } from '@testing-library/svelte';
 import { flushSync } from 'svelte';
 import MonacoEditor from '../src/editor/MonacoEditor.svelte';
 import { getActiveEditor } from '../src/editor/active-editor.js';
+
+const onUnhandledRejection = (reason: unknown) => {
+	const message = reason instanceof Error ? reason.message : String(reason);
+	if (message === 'Canceled' || message.includes('Canceled: Canceled')) return;
+	throw reason;
+};
 
 beforeAll(() => {
 	// Monaco's editor.dispose() cancels internal delayed operations (e.g. the
@@ -12,11 +18,7 @@ beforeAll(() => {
 	// rejection in Node's test runner because the cancellation races past the
 	// microtask queue our own onDestroy/dispose call is synchronous within.
 	// Swallow only this specific, known-benign Monaco cancellation shape.
-	process.on('unhandledRejection', (reason: unknown) => {
-		const message = reason instanceof Error ? reason.message : String(reason);
-		if (message === 'Canceled' || message.includes('Canceled: Canceled')) return;
-		throw reason;
-	});
+	process.on('unhandledRejection', onUnhandledRejection);
 
 	// jsdom has no ResizeObserver; Monaco's automaticLayout needs one.
 	if (!('ResizeObserver' in globalThis)) {
@@ -77,6 +79,10 @@ beforeAll(() => {
 			constructor(public items: Record<string, unknown>) {}
 		};
 	}
+});
+
+afterAll(() => {
+	process.off('unhandledRejection', onUnhandledRejection);
 });
 
 describe('MonacoEditor (real monaco-editor, mounted in jsdom)', () => {
