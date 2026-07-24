@@ -1,3 +1,18 @@
+## [0.6.0] — 2026-07-24
+
+- ci(release): trigger release on merge to main (#7) (ddf137a)
+- ci: migrate Tech Doc Writer to shared reusable (28b974e)
+- fix(ci): repair tech-doc-writer YAML indentation / remove empty workflow (f00f167)
+- ci: add security-aware Dependabot auto-merge workflow (org backfill) (f018fb4)
+- ci: change release trigger from push-to-main to tag-only (2967cdb)
+- docs: update README license section for BSL-1.1 OR MIT dual-license (bc958c8)
+- license: dual-license under BSL-1.1 OR MIT (051fcad)
+- refactor: replace inline lifecycle with reusable workflow call (a027e8e)
+- docs: refresh ROADMAP.md with OASIS strategic alignment (7aedf33)
+- docs: update copilot-instructions with praxis, design-dojo, automation rules (3ac6a42)
+- feat(release): add target_version input for milestone-driven releases (73c67dc)
+- feat(lifecycle): milestone-close triggers roadmap-aware release (8738986)
+
 ## [0.4.0] — 2026-04-18
 
 - feat(lifecycle v12): auto-release when milestone completes (2eb58eb)
