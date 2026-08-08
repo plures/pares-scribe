@@ -70,6 +70,7 @@
 
 	function handleSave(value: string): void {
 		if (editorTabs.activeTabId) {
+			editorTabs.updateContent(editorTabs.activeTabId, value);
 			editorTabs.save(editorTabs.activeTabId);
 		}
 		// TODO: Tauri command to write file

@@ -9,25 +9,19 @@
 
 import type { EditorTab, OpenTabOptions } from './editor-tabs.types.js';
 
-let _nextId = 0;
-
-/** Generate a deterministic, unique tab id. */
-function generateId(): string {
-	return `tab-${++_nextId}`;
-}
-
-/**
- * Reactive editor-tab store backed by Svelte 5 runes.
- *
- * One instance is shared across the editor plugin via the exported
- * `editorTabs` singleton.
- */
 class EditorTabStore {
 	/** Ordered list of open tabs. */
 	tabs = $state<EditorTab[]>([]);
 
 	/** ID of the currently active (focused) tab, or `null`. */
 	activeTabId = $state<string | null>(null);
+
+	#nextId = 0;
+
+	/** Generate a deterministic, unique tab id. */
+	#generateId(): string {
+		return `tab-${++this.#nextId}`;
+	}
 
 	/** Derived: the currently active tab object, or `null`. */
 	get activeTab(): EditorTab | null {
@@ -49,7 +43,7 @@ class EditorTabStore {
 
 		const content = options.content ?? '';
 		const tab: EditorTab = {
-			id: generateId(),
+			id: this.#generateId(),
 			path: options.path,
 			name: options.name ?? options.path.split('/').pop() ?? options.path,
 			content,
@@ -160,6 +154,7 @@ class EditorTabStore {
 	clear(): void {
 		this.tabs = [];
 		this.activeTabId = null;
+		this.#nextId = 0;
 	}
 }
 
