@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
 import CommandPalette from '../src/editor/CommandPalette.svelte';
 import { commandRegistry } from '../src/commands/registry.js';
 
@@ -58,9 +58,8 @@ describe('CommandPalette', () => {
 		const input = screen.getByLabelText('Command search');
 		await fireEvent.keyDown(input, { key: 'Enter' });
 
-		// Wait for async execute
-		await new Promise((r) => setTimeout(r, 10));
-		expect(executed).toBe(true);
+		await waitFor(() => expect(executed).toBe(true));
+		await waitFor(() => expect(closeFn).toHaveBeenCalled());
 	});
 
 	it('closes on Escape', async () => {
