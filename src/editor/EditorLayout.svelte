@@ -125,7 +125,7 @@
 		} else if (e.ctrlKey && e.key === 'g') {
 			e.preventDefault();
 			commandRegistry.execute('go.toLine');
-		} else if (e.ctrlKey && e.shiftKey && e.key === 'O') {
+		} else if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'o') {
 			e.preventDefault();
 			commandRegistry.execute('go.toSymbol');
 		}
