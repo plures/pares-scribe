@@ -11,6 +11,7 @@
 	import { fileStore, type FileNode } from '../explorer/file-store.svelte.js';
 	import { commandRegistry } from '../commands/registry.js';
 	import { TEXT_COMMANDS } from '../commands/text-commands.js';
+	import { EDITOR_COMMANDS } from '../commands/editor-commands.js';
 
 	interface EditorTab {
 		id: string;
@@ -49,6 +50,9 @@
 		handler: () => { if (activeTabId) closeTab(activeTabId); },
 	});
 	for (const cmd of TEXT_COMMANDS) {
+		commandRegistry.register(cmd);
+	}
+	for (const cmd of EDITOR_COMMANDS) {
 		commandRegistry.register(cmd);
 	}
 
@@ -112,6 +116,18 @@
 		} else if (e.ctrlKey && e.key === 'w') {
 			e.preventDefault();
 			if (activeTabId) closeTab(activeTabId);
+		} else if (e.ctrlKey && e.key === 'f') {
+			e.preventDefault();
+			commandRegistry.execute('find.open');
+		} else if (e.ctrlKey && e.key === 'h') {
+			e.preventDefault();
+			commandRegistry.execute('find.replace');
+		} else if (e.ctrlKey && e.key === 'g') {
+			e.preventDefault();
+			commandRegistry.execute('go.toLine');
+		} else if (e.ctrlKey && e.shiftKey && e.key === 'O') {
+			e.preventDefault();
+			commandRegistry.execute('go.toSymbol');
 		}
 	}
 </script>
