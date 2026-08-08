@@ -231,7 +231,7 @@ class FileStore {
 		return removed;
 	}
 
-	/** Rename a node. Returns true if renamed. */
+	/** Rename a node. The newName parameter is the new filename segment (last path component). Returns true if renamed. */
 	renameNode(oldPath: string, newName: string): boolean {
 		const node = this.#findNode(this.tree, oldPath);
 		if (!node) return false;
