@@ -1,3 +1,7 @@
+## [0.10.0] — 2026-08-09
+
+- feat: add find/replace, go-to-line/symbol, and format-on-save (#13) (cab3908)
+
 ## [0.9.0] — 2026-08-09
 
 - feat: editor tabs with dirty indicators + lifecycle (#10) (959f515)
