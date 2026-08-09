@@ -1,3 +1,12 @@
+## [0.9.0] — 2026-08-09
+
+- feat: editor tabs with dirty indicators + lifecycle (#10) (959f515)
+
+## [0.8.0] — 2026-08-09
+
+- feat: file explorer sidebar panel + file ops UX (#11) (2c76d1c)
+- chore: delegate dependabot-auto-merge.yml to plures/.github reusable template (#9) (83202b6)
+
 ## [0.7.0] — 2026-07-24
 
 - feat(editor): Monaco editor integration (closes #2) (#8) (084a45c)

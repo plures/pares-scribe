@@ -57,3 +57,101 @@ describe('fileStore', () => {
 		expect(fileStore.getFile('a.txt')).toBeUndefined();
 	});
 });
+
+describe('fileStore file operations', () => {
+	beforeEach(() => {
+		fileStore.clear();
+	});
+
+	it('createFile adds a file to the tree and index', () => {
+		fileStore.load(['existing.txt']);
+		const created = fileStore.createFile('newfile.txt', 'content');
+		expect(created).toBe(true);
+		expect(fileStore.getFile('newfile.txt')?.content).toBe('content');
+	});
+
+	it('createFile returns false for duplicate path', () => {
+		fileStore.load(['a.txt'], { 'a.txt': 'hello' });
+		expect(fileStore.createFile('a.txt')).toBe(false);
+	});
+
+	it('createFile creates intermediate directories', () => {
+		fileStore.load([]);
+		fileStore.createFile('src/lib/util.ts', '');
+		expect(fileStore.getFile('src/lib/util.ts')).toBeDefined();
+		const src = fileStore.tree.find((n) => n.name === 'src');
+		expect(src?.type).toBe('directory');
+	});
+
+	it('createDirectory adds a directory to the tree', () => {
+		fileStore.load([]);
+		const created = fileStore.createDirectory('components');
+		expect(created).toBe(true);
+		expect(fileStore.tree.some((n) => n.name === 'components' && n.type === 'directory')).toBe(true);
+	});
+
+	it('createDirectory is idempotent for an existing directory path', () => {
+		fileStore.load(['src/index.ts']);
+		expect(fileStore.createDirectory('src')).toBe(true);
+	});
+
+	it('deleteNode removes a file', () => {
+		fileStore.load(['a.txt', 'b.txt']);
+		const deleted = fileStore.deleteNode('a.txt');
+		expect(deleted).toBe(true);
+		expect(fileStore.getFile('a.txt')).toBeUndefined();
+		expect(fileStore.getFile('b.txt')).toBeDefined();
+	});
+
+	it('deleteNode removes a directory and its children', () => {
+		fileStore.load(['src/a.ts', 'src/b.ts', 'README.md']);
+		fileStore.deleteNode('src');
+		expect(fileStore.getFile('src/a.ts')).toBeUndefined();
+		expect(fileStore.getFile('src/b.ts')).toBeUndefined();
+		expect(fileStore.getFile('README.md')).toBeDefined();
+	});
+
+	it('deleteNode clears selectedPath when the selected file is deleted', () => {
+		fileStore.load(['a.txt']);
+		fileStore.selectFile('a.txt');
+		fileStore.deleteNode('a.txt');
+		expect(fileStore.selectedPath).toBeNull();
+	});
+
+	it('deleteNode returns false for non-existent path', () => {
+		fileStore.load(['a.txt']);
+		expect(fileStore.deleteNode('nope.txt')).toBe(false);
+	});
+
+	it('renameNode renames a file', () => {
+		fileStore.load(['a.txt'], { 'a.txt': 'content' });
+		const renamed = fileStore.renameNode('a.txt', 'b.txt');
+		expect(renamed).toBe(true);
+		expect(fileStore.getFile('a.txt')).toBeUndefined();
+		expect(fileStore.getFile('b.txt')?.content).toBe('content');
+	});
+
+	it('renameNode updates selectedPath', () => {
+		fileStore.load(['a.txt']);
+		fileStore.selectFile('a.txt');
+		fileStore.renameNode('a.txt', 'b.txt');
+		expect(fileStore.selectedPath).toBe('b.txt');
+	});
+
+	it('renameNode returns false for non-existent path', () => {
+		fileStore.load(['a.txt']);
+		expect(fileStore.renameNode('nope.txt', 'x.txt')).toBe(false);
+	});
+
+	it('renameNode returns false when target already exists', () => {
+		fileStore.load(['a.txt', 'b.txt']);
+		expect(fileStore.renameNode('a.txt', 'b.txt')).toBe(false);
+	});
+
+	it('updateContent sets content and marks modified', () => {
+		fileStore.load(['a.txt'], { 'a.txt': 'original' });
+		fileStore.updateContent('a.txt', 'changed');
+		expect(fileStore.getFile('a.txt')?.content).toBe('changed');
+		expect(fileStore.getFile('a.txt')?.modified).toBe(true);
+	});
+});
