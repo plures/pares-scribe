@@ -11,7 +11,11 @@ import type { CommandEntry } from './registry.js';
 function runAction(actionId: string): void {
 	const editor = getActiveEditor();
 	if (!editor) return;
-	editor.getAction(actionId)?.run();
+	const action = editor.getAction(actionId);
+	if (!action) return;
+	void action.run().catch(() => {
+		// Action may reject if the provider isn't available; treat as a no-op.
+	});
 }
 
 /** Open the find widget. */
