@@ -90,9 +90,9 @@ describe('fileStore file operations', () => {
 		expect(fileStore.tree.some((n) => n.name === 'components' && n.type === 'directory')).toBe(true);
 	});
 
-	it('createDirectory returns false for duplicate path', () => {
+	it('createDirectory is idempotent for an existing directory path', () => {
 		fileStore.load(['src/index.ts']);
-		expect(fileStore.createDirectory('src')).toBe(false);
+		expect(fileStore.createDirectory('src')).toBe(true);
 	});
 
 	it('deleteNode removes a file', () => {

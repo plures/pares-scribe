@@ -202,7 +202,7 @@ class FileStore {
 	createDirectory(dirPath: string): boolean {
 		// Check if directory already exists in the tree
 		const existing = this.#findNode(this.tree, dirPath);
-		if (existing) return false;
+		if (existing) return existing.type === 'directory';
 
 		const parts = dirPath.split('/');
 		const name = parts[parts.length - 1];
