@@ -236,8 +236,11 @@ class FileStore {
 		const node = this.#findNode(this.tree, oldPath);
 		if (!node) return false;
 
+		const trimmedName = newName.trim();
+		if (!trimmedName || trimmedName.includes('/')) return false;
+
 		const parts = oldPath.split('/');
-		parts[parts.length - 1] = newName;
+		parts[parts.length - 1] = trimmedName;
 		const newPath = parts.join('/');
 
 		// Check for conflict
@@ -246,7 +249,7 @@ class FileStore {
 
 		// Update node
 		this.#updatePaths(node, oldPath, newPath);
-		node.name = newName;
+		node.name = trimmedName;
 		node.path = newPath;
 
 		// Re-index files
