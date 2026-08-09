@@ -36,6 +36,8 @@
 		onready?: (editor: Monaco.editor.IStandaloneCodeEditor) => void;
 		/** Called on save (Ctrl+S) */
 		onsave?: (value: string) => void;
+		/** Automatically format the document before saving (default: true) */
+		formatOnSave?: boolean;
 	}
 
 	let {
@@ -51,6 +53,7 @@
 		onchange,
 		onready,
 		onsave,
+		formatOnSave = true,
 	}: Props = $props();
 
 	let containerEl: HTMLDivElement;
@@ -132,8 +135,14 @@
 				onchange?.(val);
 			});
 
-			// Wire up Ctrl+S → save
-			editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+			// Wire up Ctrl+S → optional format then save
+			editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
+				if (formatOnSave) {
+					const formatAction = editor?.getAction('editor.action.formatDocument');
+					if (formatAction) {
+						try { await formatAction.run(); } catch { /* formatter may not be available */ }
+					}
+				}
 				const val = editor?.getValue() ?? '';
 				onsave?.(val);
 			});

@@ -17,6 +17,7 @@ export type { EditorTab, OpenTabOptions } from './editor/editor-tabs.types.js';
 // ── Commands ────────────────────────────────────────────────────────────────
 export { commandRegistry, type CommandEntry, type CommandHandler } from './commands/registry.js';
 export { TEXT_COMMANDS } from './commands/text-commands.js';
+export { EDITOR_COMMANDS } from './commands/editor-commands.js';
 
 // ── File Store ──────────────────────────────────────────────────────────────
 export { fileStore, type FileNode } from './explorer/file-store.svelte.js';

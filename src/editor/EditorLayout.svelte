@@ -11,6 +11,7 @@
 	import { type FileNode } from '../explorer/file-store.svelte.js';
 	import { commandRegistry } from '../commands/registry.js';
 	import { TEXT_COMMANDS } from '../commands/text-commands.js';
+	import { EDITOR_COMMANDS } from '../commands/editor-commands.js';
 	import { editorTabs } from './editor-tabs.svelte.js';
 
 	let sidebarOpen = $state(true);
@@ -104,6 +105,9 @@
 	for (const cmd of TEXT_COMMANDS) {
 		commandRegistry.register(cmd);
 	}
+	for (const cmd of EDITOR_COMMANDS) {
+		commandRegistry.register(cmd);
+	}
 
 	function openFile(node: FileNode): void {
 		editorTabs.open({ path: node.path, name: node.name, content: node.content ?? '' });
@@ -134,6 +138,18 @@
 		} else if (e.ctrlKey && e.key === 'w') {
 			e.preventDefault();
 			if (editorTabs.activeTabId) editorTabs.close(editorTabs.activeTabId);
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+			e.preventDefault();
+			void commandRegistry.execute('find.open');
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
+			e.preventDefault();
+			void commandRegistry.execute('find.replace');
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g') {
+			e.preventDefault();
+			void commandRegistry.execute('go.toLine');
+		} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'o') {
+			e.preventDefault();
+			void commandRegistry.execute('go.toSymbol');
 		}
 	}
 </script>
