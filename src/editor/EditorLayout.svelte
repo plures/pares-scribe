@@ -87,9 +87,12 @@
 		title: 'Delete File/Folder',
 		category: 'File',
 		handler: () => {
-			if (fileStore.selectedPath) {
-				fileStore.deleteNode(fileStore.selectedPath);
-			}
+			const path = fileStore.selectedPath;
+			if (!path) return;
+			const removed = fileStore.deleteNode(path);
+			if (!removed) return;
+			const tab = tabs.find((t) => t.path === path);
+			if (tab) closeTab(tab.id);
 		},
 	});
 	for (const cmd of TEXT_COMMANDS) {
