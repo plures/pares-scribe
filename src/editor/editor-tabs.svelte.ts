@@ -120,10 +120,9 @@ class EditorTabStore {
 
 	/** Close every tab *except* the one with the given id. */
 	closeOthers(tabId: string): void {
+		if (!this.tabs.some((t) => t.id === tabId)) return;
 		this.tabs = this.tabs.filter((t) => t.id === tabId);
-		if (!this.tabs.some((t) => t.id === this.activeTabId)) {
-			this.activeTabId = this.tabs[0]?.id ?? null;
-		}
+		this.activeTabId = tabId;
 	}
 
 	/** Close all tabs that are **not** dirty. */
