@@ -1,3 +1,7 @@
+## [0.9.0] — 2026-08-09
+
+- feat: editor tabs with dirty indicators + lifecycle (#10) (959f515)
+
 ## [0.8.0] — 2026-08-09
 
 - feat: file explorer sidebar panel + file ops UX (#11) (2c76d1c)
