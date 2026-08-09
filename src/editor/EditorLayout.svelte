@@ -8,26 +8,14 @@
 	import MonacoEditor from './MonacoEditor.svelte';
 	import FileExplorer from './FileExplorer.svelte';
 	import CommandPalette from './CommandPalette.svelte';
-	import { fileStore, type FileNode } from '../explorer/file-store.svelte.js';
+	import { type FileNode } from '../explorer/file-store.svelte.js';
 	import { commandRegistry } from '../commands/registry.js';
 	import { TEXT_COMMANDS } from '../commands/text-commands.js';
-
-	interface EditorTab {
-		id: string;
-		path: string;
-		name: string;
-		content: string;
-		language: string;
-		modified: boolean;
-	}
+	import { editorTabs } from './editor-tabs.svelte.js';
 
 	let sidebarOpen = $state(true);
 	let sidebarWidth = $state(240);
 	let commandPaletteOpen = $state(false);
-	let tabs = $state<EditorTab[]>([]);
-	let activeTabId = $state<string | null>(null);
-
-	let activeTab = $derived(tabs.find((t) => t.id === activeTabId) ?? null);
 
 	// Register view commands
 	commandRegistry.register({
@@ -46,7 +34,25 @@
 		id: 'file.close',
 		title: 'Close Editor',
 		category: 'File',
-		handler: () => { if (activeTabId) closeTab(activeTabId); },
+		handler: () => { if (editorTabs.activeTabId) editorTabs.close(editorTabs.activeTabId); },
+	});
+	commandRegistry.register({
+		id: 'file.closeAll',
+		title: 'Close All Editors',
+		category: 'File',
+		handler: () => { editorTabs.closeAll(); },
+	});
+	commandRegistry.register({
+		id: 'file.closeOthers',
+		title: 'Close Other Editors',
+		category: 'File',
+		handler: () => { if (editorTabs.activeTabId) editorTabs.closeOthers(editorTabs.activeTabId); },
+	});
+	commandRegistry.register({
+		id: 'file.closeSaved',
+		title: 'Close Saved Editors',
+		category: 'File',
+		handler: () => { editorTabs.closeSaved(); },
 	});
 	commandRegistry.register({
 		id: 'file.newFile',
@@ -100,51 +106,20 @@
 	}
 
 	function openFile(node: FileNode): void {
-		// Check if already open
-		const existing = tabs.find((t) => t.path === node.path);
-		if (existing) {
-			activeTabId = existing.id;
-			return;
-		}
-
-		const tab: EditorTab = {
-			id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-			path: node.path,
-			name: node.name,
-			content: node.content ?? '',
-			language: 'plaintext',
-			modified: false,
-		};
-
-		tabs = [...tabs, tab];
-		activeTabId = tab.id;
-	}
-
-	function closeTab(tabId: string): void {
-		const index = tabs.findIndex((t) => t.id === tabId);
-		tabs = tabs.filter((t) => t.id !== tabId);
-
-		if (activeTabId === tabId) {
-			if (tabs.length === 0) {
-				activeTabId = null;
-			} else {
-				activeTabId = tabs[Math.min(index, tabs.length - 1)].id;
-			}
-		}
+		editorTabs.open({ path: node.path, name: node.name, content: node.content ?? '' });
 	}
 
 	function handleContentChange(value: string): void {
-		if (!activeTabId) return;
-		tabs = tabs.map((t) =>
-			t.id === activeTabId ? { ...t, content: value, modified: true } : t,
-		);
+		if (editorTabs.activeTabId) {
+			editorTabs.updateContent(editorTabs.activeTabId, value);
+		}
 	}
 
 	function handleSave(value: string): void {
-		if (!activeTabId) return;
-		tabs = tabs.map((t) =>
-			t.id === activeTabId ? { ...t, modified: false } : t,
-		);
+		if (editorTabs.activeTabId) {
+			editorTabs.updateContent(editorTabs.activeTabId, value);
+			editorTabs.save(editorTabs.activeTabId);
+		}
 		// TODO: Tauri command to write file
 	}
 
@@ -158,7 +133,7 @@
 			sidebarOpen = !sidebarOpen;
 		} else if (e.ctrlKey && e.key === 'w') {
 			e.preventDefault();
-			if (activeTabId) closeTab(activeTabId);
+			if (editorTabs.activeTabId) editorTabs.close(editorTabs.activeTabId);
 		}
 	}
 </script>
@@ -176,25 +151,25 @@
 	<!-- Main area -->
 	<div class="main-area">
 		<!-- Tab bar -->
-		{#if tabs.length > 0}
+		{#if editorTabs.tabs.length > 0}
 			<div class="tab-bar" role="tablist">
-				{#each tabs as tab}
+				{#each editorTabs.tabs as tab}
 					<div
 						class="tab"
-						class:active={tab.id === activeTabId}
+						class:active={tab.id === editorTabs.activeTabId}
 						role="tab"
 						tabindex="0"
-						aria-selected={tab.id === activeTabId}
-						onclick={() => { activeTabId = tab.id; }}
-						onkeydown={(e) => { if (e.key === 'Enter') activeTabId = tab.id; }}
+						aria-selected={tab.id === editorTabs.activeTabId}
+						onclick={() => { editorTabs.activate(tab.id); }}
+						onkeydown={(e) => { if (e.key === 'Enter') editorTabs.activate(tab.id); }}
 					>
 						<span class="tab-name">{tab.name}</span>
-						{#if tab.modified}
-							<span class="tab-modified">●</span>
+						{#if tab.dirty}
+							<span class="tab-dirty" aria-label="Unsaved changes">●</span>
 						{/if}
 						<button
 							class="tab-close"
-							onclick={(e) => { e.stopPropagation(); closeTab(tab.id); }}
+							onclick={(e) => { e.stopPropagation(); editorTabs.close(tab.id); }}
 							aria-label="Close {tab.name}"
 						>×</button>
 					</div>
@@ -204,10 +179,10 @@
 
 		<!-- Editor content -->
 		<div class="editor-content">
-			{#if activeTab}
+			{#if editorTabs.activeTab}
 				<MonacoEditor
-					value={activeTab.content}
-					filePath={activeTab.path}
+					value={editorTabs.activeTab.content}
+					filePath={editorTabs.activeTab.path}
 					onchange={handleContentChange}
 					onsave={handleSave}
 				/>
@@ -292,7 +267,7 @@
 		background: var(--color-bg-hover, #292e42);
 	}
 
-	.tab-modified {
+	.tab-dirty {
 		color: var(--color-warning, #e0af68);
 		font-size: 0.625rem;
 	}

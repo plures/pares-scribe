@@ -10,6 +10,10 @@ export { default as MonacoEditor } from './editor/MonacoEditor.svelte';
 export { default as FileExplorer } from './editor/FileExplorer.svelte';
 export { default as CommandPalette } from './editor/CommandPalette.svelte';
 
+// ── Editor Tabs ─────────────────────────────────────────────────────────────
+export { editorTabs } from './editor/editor-tabs.svelte.js';
+export type { EditorTab, OpenTabOptions } from './editor/editor-tabs.types.js';
+
 // ── Commands ────────────────────────────────────────────────────────────────
 export { commandRegistry, type CommandEntry, type CommandHandler } from './commands/registry.js';
 export { TEXT_COMMANDS } from './commands/text-commands.js';
