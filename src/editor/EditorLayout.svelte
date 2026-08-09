@@ -138,18 +138,18 @@
 		} else if (e.ctrlKey && e.key === 'w') {
 			e.preventDefault();
 			if (editorTabs.activeTabId) editorTabs.close(editorTabs.activeTabId);
-		} else if (e.ctrlKey && e.key === 'f') {
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
 			e.preventDefault();
-			commandRegistry.execute('find.open');
-		} else if (e.ctrlKey && e.key === 'h') {
+			void commandRegistry.execute('find.open');
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
 			e.preventDefault();
-			commandRegistry.execute('find.replace');
-		} else if (e.ctrlKey && e.key === 'g') {
+			void commandRegistry.execute('find.replace');
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g') {
 			e.preventDefault();
-			commandRegistry.execute('go.toLine');
-		} else if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'o') {
+			void commandRegistry.execute('go.toLine');
+		} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'o') {
 			e.preventDefault();
-			commandRegistry.execute('go.toSymbol');
+			void commandRegistry.execute('go.toSymbol');
 		}
 	}
 </script>
