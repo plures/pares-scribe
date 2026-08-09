@@ -26,25 +26,8 @@
 		keybindingMap.set(kb.command, kb.key);
 	}
 
-	// Filter commands by query
-	let filteredCommands = $derived.by(() => {
-		const all = commandRegistry.list();
-		if (!query.trim()) return all;
-		const q = query.toLowerCase();
-		return all
-			.filter((cmd: CommandEntry) => {
-				const matchTitle = cmd.title.toLowerCase().includes(q);
-				const matchId = cmd.id.toLowerCase().includes(q);
-				const matchCategory = cmd.category?.toLowerCase().includes(q) ?? false;
-				return matchTitle || matchId || matchCategory;
-			})
-			.sort((a: CommandEntry, b: CommandEntry) => {
-				// Prefer title starts-with matches
-				const aStarts = a.title.toLowerCase().startsWith(q) ? 0 : 1;
-				const bStarts = b.title.toLowerCase().startsWith(q) ? 0 : 1;
-				return aStarts - bStarts;
-			});
-	});
+	// Filter commands by query — delegates to registry.search() for consistent matching
+	let filteredCommands = $derived(commandRegistry.search(query));
 
 	function formatKeybinding(cmdId: string): string {
 		const key = keybindingMap.get(cmdId);
