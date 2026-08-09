@@ -186,7 +186,7 @@ class FileStore {
 
 	/** Create a new file at the given path. Returns true if created. */
 	createFile(path: string, content = ''): boolean {
-		if (this.#files.has(path)) return false;
+		if (this.#files.has(path) || this.#findNode(this.tree, path)) return false;
 
 		const parts = path.split('/');
 		const name = parts[parts.length - 1];
