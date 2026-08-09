@@ -9,7 +9,7 @@ import {
 	formatDocument,
 	EDITOR_COMMANDS,
 } from '../src/commands/editor-commands.js';
-import { setActiveEditor, getActiveEditor } from '../src/editor/active-editor.js';
+import { setActiveEditor } from '../src/editor/active-editor.js';
 
 describe('editor-commands', () => {
 	beforeEach(() => {
