@@ -1,3 +1,7 @@
+## [0.11.0] — 2026-08-09
+
+- feat: wire CommandPalette to registry.search() (#12) (7b95e02)
+
 ## [0.10.0] — 2026-08-09
 
 - feat: add find/replace, go-to-line/symbol, and format-on-save (#13) (cab3908)
