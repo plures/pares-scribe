@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
 import CommandPalette from '../src/editor/CommandPalette.svelte';
 import { commandRegistry } from '../src/commands/registry.js';
@@ -6,6 +6,8 @@ import { commandRegistry } from '../src/commands/registry.js';
 describe('CommandPalette', () => {
 	beforeEach(() => {
 		commandRegistry.clear();
+	});
+	afterEach(() => {
 		cleanup();
 	});
 
