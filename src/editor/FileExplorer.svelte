@@ -194,6 +194,7 @@
 						onclick={() => handleFileClick(node)}
 						oncontextmenu={(e) => handleContextMenu(e, node)}
 						onkeydown={(e) => {
+							if (e.key === 'Escape') { e.preventDefault(); closeContextMenu(); }
 							if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFileClick(node); }
 							if (e.key === 'F2') { e.preventDefault(); startRename(node); }
 							if (e.key === 'Delete') { e.preventDefault(); handleDelete(node); }
