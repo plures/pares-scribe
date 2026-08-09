@@ -48,6 +48,53 @@
 		category: 'File',
 		handler: () => { if (activeTabId) closeTab(activeTabId); },
 	});
+	commandRegistry.register({
+		id: 'file.newFile',
+		title: 'New File',
+		category: 'File',
+		handler: () => {
+			const name = prompt('File name:');
+			if (name?.trim()) {
+				const dir = fileStore.selectedPath
+					? (fileStore.getFile(fileStore.selectedPath)
+						? fileStore.selectedPath.split('/').slice(0, -1).join('/')
+						: fileStore.selectedPath)
+					: '';
+				const path = dir ? `${dir}/${name.trim()}` : name.trim();
+				fileStore.createFile(path);
+			}
+		},
+	});
+	commandRegistry.register({
+		id: 'file.newFolder',
+		title: 'New Folder',
+		category: 'File',
+		handler: () => {
+			const name = prompt('Folder name:');
+			if (name?.trim()) {
+				const dir = fileStore.selectedPath
+					? (fileStore.getFile(fileStore.selectedPath)
+						? fileStore.selectedPath.split('/').slice(0, -1).join('/')
+						: fileStore.selectedPath)
+					: '';
+				const path = dir ? `${dir}/${name.trim()}` : name.trim();
+				fileStore.createDirectory(path);
+			}
+		},
+	});
+	commandRegistry.register({
+		id: 'file.delete',
+		title: 'Delete File/Folder',
+		category: 'File',
+		handler: () => {
+			const path = fileStore.selectedPath;
+			if (!path) return;
+			const removed = fileStore.deleteNode(path);
+			if (!removed) return;
+			const tab = tabs.find((t) => t.path === path);
+			if (tab) closeTab(tab.id);
+		},
+	});
 	for (const cmd of TEXT_COMMANDS) {
 		commandRegistry.register(cmd);
 	}

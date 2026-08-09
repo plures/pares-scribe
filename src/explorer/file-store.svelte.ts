@@ -175,6 +175,154 @@ class FileStore {
 		if (node) node.modified = modified;
 	}
 
+	/** Update file content in the store. */
+	updateContent(path: string, content: string): void {
+		const node = this.#files.get(path);
+		if (node) {
+			node.content = content;
+			node.modified = true;
+		}
+	}
+
+	/** Create a new file at the given path. Returns true if created. */
+	createFile(path: string, content = ''): boolean {
+		if (this.#files.has(path) || this.#findNode(this.tree, path)) return false;
+
+		const parts = path.split('/');
+		const name = parts[parts.length - 1];
+		const newNode: FileNode = { name, path, type: 'file', content, modified: false };
+
+		this.#insertNode(parts, newNode);
+		this.#files.set(path, newNode);
+		this.tree = [...this.tree]; // trigger reactivity
+		return true;
+	}
+
+	/** Create a new directory at the given path. Returns true if created. */
+	createDirectory(dirPath: string): boolean {
+		// Check if directory already exists in the tree
+		const existing = this.#findNode(this.tree, dirPath);
+		if (existing) return existing.type === 'directory';
+
+		const parts = dirPath.split('/');
+		const name = parts[parts.length - 1];
+		const newNode: FileNode = { name, path: dirPath, type: 'directory', children: [] };
+
+		this.#insertNode(parts, newNode);
+		this.tree = [...this.tree];
+		return true;
+	}
+
+	/** Delete a node (file or directory) at the given path. Returns true if deleted. */
+	deleteNode(path: string): boolean {
+		const removed = this.#removeNode(this.tree, path);
+		if (removed) {
+			// Remove all indexed files under this path
+			for (const key of [...this.#files.keys()]) {
+				if (key === path || key.startsWith(path + '/')) {
+					this.#files.delete(key);
+				}
+			}
+			if (this.selectedPath === path || this.selectedPath?.startsWith(path + '/')) {
+				this.selectedPath = null;
+			}
+			this.tree = [...this.tree];
+		}
+		return removed;
+	}
+
+	/** Rename a node. The newName parameter is the new filename segment (last path component). Returns true if renamed. */
+	renameNode(oldPath: string, newName: string): boolean {
+		const node = this.#findNode(this.tree, oldPath);
+		if (!node) return false;
+
+		const trimmedName = newName.trim();
+		if (!trimmedName || trimmedName.includes('/')) return false;
+
+		const parts = oldPath.split('/');
+		parts[parts.length - 1] = trimmedName;
+		const newPath = parts.join('/');
+
+		// Check for conflict
+		if (node.type === 'file' && this.#files.has(newPath)) return false;
+		if (node.type === 'directory' && this.#findNode(this.tree, newPath)) return false;
+
+		// Update node
+		this.#updatePaths(node, oldPath, newPath);
+		node.name = trimmedName;
+		node.path = newPath;
+
+		// Re-index files
+		for (const key of [...this.#files.keys()]) {
+			if (key === oldPath || key.startsWith(oldPath + '/')) {
+				const fileNode = this.#files.get(key)!;
+				this.#files.delete(key);
+				this.#files.set(fileNode.path, fileNode);
+			}
+		}
+
+		if (this.selectedPath === oldPath) {
+			this.selectedPath = newPath;
+		} else if (this.selectedPath?.startsWith(oldPath + '/')) {
+			this.selectedPath = newPath + this.selectedPath.slice(oldPath.length);
+		}
+
+		this.tree = [...this.tree];
+		return true;
+	}
+
+	#findNode(nodes: FileNode[], path: string): FileNode | undefined {
+		for (const node of nodes) {
+			if (node.path === path) return node;
+			if (node.children) {
+				const found = this.#findNode(node.children, path);
+				if (found) return found;
+			}
+		}
+		return undefined;
+	}
+
+	#insertNode(parts: string[], newNode: FileNode): void {
+		let siblings = this.tree;
+		for (let i = 0; i < parts.length - 1; i++) {
+			const dirPath = parts.slice(0, i + 1).join('/');
+			let dir = siblings.find((c) => c.path === dirPath && c.type === 'directory');
+			if (!dir) {
+				dir = { name: parts[i], path: dirPath, type: 'directory', children: [] };
+				siblings.push(dir);
+			}
+			if (!dir.children) dir.children = [];
+			siblings = dir.children;
+		}
+		siblings.push(newNode);
+	}
+
+	#removeNode(nodes: FileNode[], path: string): boolean {
+		const idx = nodes.findIndex((n) => n.path === path);
+		if (idx !== -1) {
+			nodes.splice(idx, 1);
+			return true;
+		}
+		for (const node of nodes) {
+			if (node.children && this.#removeNode(node.children, path)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	#updatePaths(node: FileNode, oldPrefix: string, newPrefix: string): void {
+		if (node.children) {
+			for (const child of node.children) {
+				const childOld = child.path;
+				child.path = newPrefix + child.path.slice(oldPrefix.length);
+				if (child.children) {
+					this.#updatePaths(child, childOld, child.path);
+				}
+			}
+		}
+	}
+
 	/** Remove all files/selection. Mainly useful for tests. */
 	clear(): void {
 		this.tree = [];
